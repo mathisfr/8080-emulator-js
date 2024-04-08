@@ -29,7 +29,7 @@ body{
     justify-content: center;
     text-align: center;
     width: 100%;
-    min-height:15vh;
+    height:15vh;
     background-color: lightslategray;
     color:white;
 }
