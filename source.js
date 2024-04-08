@@ -113,6 +113,10 @@ function parity(nbr){
     return (count % 2 == 0);
 }
 
+function twoComplement(nbr){
+    return (~nbr + 1);
+}
+
 function disassemblerBuffer(){
     if (State8080.memory == null){
         State8080.memory = new Uint8Array(fileBuffer);
@@ -602,147 +606,265 @@ function disassemblerBuffer(){
                 break;
             case 0x88:
                 appendLog( i.toString(16) + " | " + "ADC B");
+                State8080.a += State8080.b + State8080.cc.CY;
+                setFlags(State8080.a);
                 break;
             case 0x89:
                 appendLog( i.toString(16) + " | " + "ADC C");
+                State8080.a += State8080.c + State8080.cc.CY;
+                setFlags(State8080.a);
                 break;
             case 0x8a:
                 appendLog( i.toString(16) + " | " + "ADC D");
+                State8080.a += State8080.d + State8080.cc.CY;
+                setFlags(State8080.a);
                 break;
             case 0x8b:
                 appendLog( i.toString(16) + " | " + "ADC E");
+                State8080.a += State8080.e + State8080.cc.CY;
+                setFlags(State8080.a);
                 break;
             case 0x8c:
                 appendLog( i.toString(16) + " | " + "ADC H");
+                State8080.a += State8080.h + State8080.cc.CY;
+                setFlags(State8080.a);
                 break;
             case 0x8d:
                 appendLog( i.toString(16) + " | " + "ADC L");
+                State8080.a += State8080.l + State8080.cc.CY;
+                setFlags(State8080.a);
                 break;
             case 0x8e:
                 appendLog( i.toString(16) + " | " + "ADC M");
                 break;
             case 0x8f:
                 appendLog( i.toString(16) + " | " + "ADC A");
+                State8080.a += State8080.a + State8080.cc.CY;
+                setFlags(State8080.a);
                 break;
             case 0x90:
                 appendLog( i.toString(16) + " | " + "SUB B");
+                State8080.a -= State8080.b;
+                setFlags(State8080.a);
                 break;
             case 0x91:
                 appendLog( i.toString(16) + " | " + "SUB C");
+                State8080.a -= State8080.c;
+                setFlags(State8080.a);
                 break;
             case 0x92:
                 appendLog( i.toString(16) + " | " + "SUB D");
+                State8080.a -= State8080.d;
+                setFlags(State8080.a);
                 break;
             case 0x93:
                 appendLog( i.toString(16) + " | " + "SUB E");
+                State8080.a -= State8080.e;
+                setFlags(State8080.a);
                 break;
             case 0x94:
                 appendLog( i.toString(16) + " | " + "SUB H");
+                State8080.a -= State8080.h;
+                setFlags(State8080.a);
                 break;
             case 0x95:
                 appendLog( i.toString(16) + " | " + "SUB L");
+                State8080.a -= State8080.l;
+                setFlags(State8080.a);
                 break;
             case 0x96:
                 appendLog( i.toString(16) + " | " + "SUB M");
                 break;
             case 0x97:
                 appendLog( i.toString(16) + " | " + "SUB A");
+                State8080.a -= State8080.a;
+                setFlags(State8080.a);
                 break;
             case 0x98:
                 appendLog( i.toString(16) + " | " + "SBB B");
+                State8080.a += twoComplement(State8080.b + State8080.cc.CY);
+                setFlags(State8080.a);
                 break;
             case 0x99:
                 appendLog( i.toString(16) + " | " + "SBB C");
+                State8080.a += twoComplement(State8080.c + State8080.cc.CY);
+                setFlags(State8080.a);
                 break;
             case 0x9a:
                 appendLog( i.toString(16) + " | " + "SBB D");
+                State8080.a += twoComplement(State8080.d + State8080.cc.CY);
+                setFlags(State8080.a);
                 break;
             case 0x9b:
                 appendLog( i.toString(16) + " | " + "SBB E");
+                State8080.a += twoComplement(State8080.e + State8080.cc.CY);
+                setFlags(State8080.a);
                 break;
             case 0x9c:
                 appendLog( i.toString(16) + " | " + "SBB H");
+                State8080.a += twoComplement(State8080.h + State8080.cc.CY);
+                setFlags(State8080.a);
                 break;
             case 0x9d:
                 appendLog( i.toString(16) + " | " + "SBB L");
+                State8080.a += twoComplement(State8080.l + State8080.cc.CY);
+                setFlags(State8080.a);
                 break;
             case 0x9e:
                 appendLog( i.toString(16) + " | " + "SBB M");
                 break;
             case 0x9f:
                 appendLog( i.toString(16) + " | " + "SBB A");
+                State8080.a += twoComplement(State8080.a + State8080.cc.CY);
                 break;
             case 0xa0:
                 appendLog( i.toString(16) + " | " + "ANA B");
+                State8080.a &= State8080.b;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
                 break;
             case 0xa1:
                 appendLog( i.toString(16) + " | " + "ANA C");
+                State8080.a &= State8080.c;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
                 break;
             case 0xa2:
                 appendLog( i.toString(16) + " | " + "ANA D");
+                State8080.a &= State8080.d;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
                 break;
             case 0xa3:
                 appendLog( i.toString(16) + " | " + "ANA E");
+                State8080.a &= State8080.e;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
                 break;
             case 0xa4:
                 appendLog( i.toString(16) + " | " + "ANA H");
+                State8080.a &= State8080.h;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
                 break;
             case 0xa5:
                 appendLog( i.toString(16) + " | " + "ANA L");
+                State8080.a &= State8080.l;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
                 break;
             case 0xa6:
                 appendLog( i.toString(16) + " | " + "ANA M");
                 break;
             case 0xa7:
                 appendLog( i.toString(16) + " | " + "ANA A");
+                State8080.a &= State8080.a;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
                 break;
             case 0xa8:
                 appendLog( i.toString(16) + " | " + "XRA B");
+                State8080.a ^= State8080.b;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xa9:
                 appendLog( i.toString(16) + " | " + "XRA C");
+                State8080.a ^= State8080.c;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xaa:
                 appendLog( i.toString(16) + " | " + "XRA D");
+                State8080.a ^= State8080.d;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xab:
                 appendLog( i.toString(16) + " | " + "XRA E");
+                State8080.a ^= State8080.e;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xac:
                 appendLog( i.toString(16) + " | " + "XRA H");
+                State8080.a ^= State8080.h;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xad:
                 appendLog( i.toString(16) + " | " + "XRA L");
+                State8080.a ^= State8080.l;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xae:
                 appendLog( i.toString(16) + " | " + "XRA M");
                 break;
             case 0xaf:
                 appendLog( i.toString(16) + " | " + "XRA A");
+                State8080.a ^= State8080.a;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb0:
                 appendLog( i.toString(16) + " | " + "ORA B");
+                State8080.a |= State8080.b;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb1:
                 appendLog( i.toString(16) + " | " + "ORA C");
+                State8080.a |= State8080.c;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb2:
                 appendLog( i.toString(16) + " | " + "ORA D");
+                State8080.a |= State8080.d;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb3:
                 appendLog( i.toString(16) + " | " + "ORA E");
+                State8080.a |= State8080.e;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb4:
                 appendLog( i.toString(16) + " | " + "ORA H");
+                State8080.a |= State8080.h;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb5:
                 appendLog( i.toString(16) + " | " + "ORA L");
+                State8080.a |= State8080.l;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb6:
                 appendLog( i.toString(16) + " | " + "ORA M");
                 break;
             case 0xb7:
                 appendLog( i.toString(16) + " | " + "ORA A");
+                State8080.a |= State8080.a;
+                setFlags(State8080.a);
+                State8080.cc.CY = 0;
+                State8080.cc.AC = 0;
                 break;
             case 0xb8:
                 appendLog( i.toString(16) + " | " + "CMP B");
