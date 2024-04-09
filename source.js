@@ -31,7 +31,7 @@ var State8080 = {
 }
 
 window.addEventListener('DOMContentLoaded', function() {
-    disassembler = document.getElementById("disassembler");
+    disassembler = document.getElementById("disassembler-table-body");
     const dragfile = this.document.getElementById("drag-file");
     dragfile.addEventListener("dragover", (e)=>{
         e.stopPropagation();
@@ -45,9 +45,9 @@ window.addEventListener('DOMContentLoaded', function() {
         file = files[0];
         console.log(files);
         const nameSize = file.name.length;
-        appendLog("----");
+        /*appendLog("----");
         appendLog("Name: " + (file.name ? file.name : "NOT SUPPORTED"));
-        appendLog("Size: " + (file.size ? file.size + " bytes" : "NOT SUPPORTED"));
+        appendLog("Size: " + (file.size ? file.size + " bytes" : "NOT SUPPORTED"));*/
         readImage();
     })
 });
@@ -60,22 +60,39 @@ function appendLog(message){
     disassembler.appendChild(logNode);
 }
 
+function appendEmulator(_address, _opcode, _instruction){
+    if (disassembler == undefined) return;
+    const rowTable = document.createElement("tr");
+    const address = document.createElement("td");
+    const opcode = document.createElement("td");
+    const instruction = document.createElement("td");
+    address.appendChild(document.createTextNode(toHexa(_address)));
+    for (var i = 0; i < _opcode.length; i++){
+        opcode.appendChild(document.createTextNode(toHexa(_opcode[i])));
+    }
+    instruction.appendChild(document.createTextNode(_instruction));
+    rowTable.appendChild(address);
+    rowTable.appendChild(opcode);
+    rowTable.appendChild(instruction);
+    disassembler.appendChild(rowTable);
+}
+
 function readImage() {
     reader.readAsArrayBuffer(file);
     reader.addEventListener('loadstart', (event) => {
-        appendLog("Loading file...");
+        //appendLog("Loading file...");
     });
     reader.addEventListener('load', (event) => {
-        appendLog("Loading successful");
-        appendLog("----");
+        /*appendLog("Loading successful");
+        appendLog("----");*/
         fileBuffer = reader.result;
         //readBuffer();
         disassemblerBuffer();
     });
     reader.addEventListener('error', (event) => {
-        appendLog("Loading failed");
+        /*appendLog("Loading failed");
         appendLog(reader.error);
-        appendLog("----");
+        appendLog("----");*/
     });
 }
 
@@ -139,7 +156,819 @@ function pop(){
     return State8080.memory[State8080.sp + 1] << 8 | State8080.memory[State8080.sp];
 }
 
+/**
+ * Disassemble the buffer
+ */
+
 function disassemblerBuffer(){
+    if (State8080.memory == null){
+        State8080.memory = new Uint8Array(fileBuffer);
+    }
+    for (let i = 0; i < State8080.memory.length; i++){
+        switch(State8080.memory[i]){
+            case 0x08:
+            case 0x10:
+            case 0x18:
+            case 0xd9:
+            case 0xdd:
+            case 0xed:
+            case 0xfc:
+            case 0xcb:
+            case 0xfd:
+                break;
+            case 0x00:
+                appendEmulator(i, [State8080.memory[i]], "NOP");
+                break;
+            case 0x01:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "LXI B, D16");
+                State8080.b = State8080.memory[i+2];
+                State8080.c = State8080.memory[i+1];
+                i+=2;
+                break;
+            case 0x02:
+                appendEmulator(i, [State8080.memory[i]], "STAX B");
+                break;
+            case 0x03:
+                appendEmulator(i, [State8080.memory[i]], "INX B");
+                break;
+            case 0x04:
+                appendEmulator(i, [State8080.memory[i]], "INR B");
+                break;
+            case 0x05:
+                appendEmulator(i, [State8080.memory[i]], "DCR B");
+                break;
+            case 0x06:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI B, D8");
+                i++;
+                break;
+            case 0x07:
+                appendEmulator(i, [State8080.memory[i]], "RLC");
+                break;
+            case 0x09:
+                appendEmulator(i, [State8080.memory[i]], "DAD B");
+                break;
+            case 0x0a:
+                appendEmulator(i, [State8080.memory[i]], "LDAX B");
+                break;
+            case 0x0b:
+                appendEmulator(i, [State8080.memory[i]], "DCX B");
+                break;
+            case 0x0c:
+                appendEmulator(i, [State8080.memory[i]], "INR C");
+                break;
+            case 0x0d:
+                appendEmulator(i, [State8080.memory[i]], "DCR C");
+                break;
+            case 0x0e:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI C, D8");
+                i++;
+                break;
+            case 0x0f:
+                appendEmulator(i, [State8080.memory[i]], "RRC");
+                break;
+            case 0x11:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "LXI D, D16");
+                i+= 2;
+                break;
+            case 0x12:
+                appendEmulator(i, [State8080.memory[i]], "STAX D");
+                break;
+            case 0x13:
+                appendEmulator(i, [State8080.memory[i]], "INX D");
+                break;
+            case 0x14:
+                appendEmulator(i, [State8080.memory[i]], "INR D");
+                break;
+            case 0x15:
+                appendEmulator(i, [State8080.memory[i]], "DCR D");
+                break;
+            case 0x16:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI D, D8");
+                i++;
+                break;
+            case 0x17:
+                appendEmulator(i, [State8080.memory[i]], "RAL");
+                break;
+            case 0x19:
+                appendEmulator(i, [State8080.memory[i]], "DAD D");
+                break;
+            case 0x1a:
+                appendEmulator(i, [State8080.memory[i]], "LDAX D");
+                break;
+            case 0x1b:
+                appendEmulator(i, [State8080.memory[i]], "DCX D");
+                break;
+            case 0x1c:
+                appendEmulator(i, [State8080.memory[i]], "INR E");
+                break;
+            case 0x1d:
+                appendEmulator(i, [State8080.memory[i]], "DCR E");
+                break;
+            case 0x1e:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI E, D8");
+                i++;
+                break;
+            case 0x1f:
+                appendEmulator(i, [State8080.memory[i]], "RAR");
+                break;
+            case 0x20:
+                appendEmulator(i, [State8080.memory[i]], "RIM");
+                break;
+            case 0x21:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "LXI H, D16");
+                i+= 2;
+                break;
+            case 0x22:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "SHLD " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1] ));
+                i+= 2;
+                break;
+            case 0x23:
+                appendEmulator(i, [State8080.memory[i]], "INX H");
+                break;
+            case 0x24:
+                appendEmulator(i, [State8080.memory[i]], "INR H");
+                break;
+            case 0x25:
+                appendEmulator(i, [State8080.memory[i]], "DCR H");
+                break;
+            case 0x26:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI H, D8");
+                i++;
+                break;
+            case 0x27:
+                appendEmulator(i, [State8080.memory[i]], "DAA");
+                break;
+            case 0x29:
+                appendEmulator(i, [State8080.memory[i]], "DAD H");
+                break;
+            case 0x2a:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "LHLD " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1] ));
+                i+= 2;
+                break;
+            case 0x2b:
+                appendEmulator(i, [State8080.memory[i]], "DCX H");
+                break;
+            case 0x2c:
+                appendEmulator(i, [State8080.memory[i]], "INR L");
+                break;
+            case 0x2d:
+                appendEmulator(i, [State8080.memory[i]], "DCR L");
+                break;
+            case 0x2e:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI L, D8");
+                i++;
+                break;
+            case 0x2f:
+                appendEmulator(i, [State8080.memory[i]], "CMA");
+                break;
+            case 0x31:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "LXI SP, D16");
+                i+= 2;
+                break;
+            case 0x32:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "STA " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1] ));
+                i+= 2;
+                break;
+            case 0x33:
+                appendEmulator(i, [State8080.memory[i]], "INX SP");
+                break;
+            case 0x34:
+                appendEmulator(i, [State8080.memory[i]], "INR M");
+                break;
+            case 0x35:
+                appendEmulator(i, [State8080.memory[i]], "DCR M");
+                break;
+            case 0x36:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI M,D8");
+                i++;
+                break;
+            case 0x37:
+                appendEmulator(i, [State8080.memory[i]], "STC");
+                break;
+            case 0x39:
+                appendEmulator(i, [State8080.memory[i]], "DAD SP");
+                break;
+            case 0x3a:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "LDA " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1] ));
+                i+= 2;
+                break;
+            case 0x3b:
+                appendEmulator(i, [State8080.memory[i]], "DCX SP");
+                break;
+            case 0x3c:
+                appendEmulator(i, [State8080.memory[i]], "INR A");
+                break;
+            case 0x3d:
+                appendEmulator(i, [State8080.memory[i]], "DCR A");
+                break;
+            case 0x3e:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI A,D8");
+                i++;
+                break;
+            case 0x3f:
+                appendEmulator(i, [State8080.memory[i]], "CMC");
+                break;
+            case 0x40:
+                appendEmulator(i, [State8080.memory[i]], "MOV B, B");
+                break; 
+            case 0x41: 
+                appendEmulator(i, [State8080.memory[i]], "MOV B, C");
+                break; 
+            case 0x42: 
+                appendEmulator(i, [State8080.memory[i]], "MOV B, D");
+                break; 
+            case 0x43: 
+                appendEmulator(i, [State8080.memory[i]], "MOV B, E");
+                break; 
+            case 0x44: 
+                appendEmulator(i, [State8080.memory[i]], "MOV B, H");
+                break; 
+            case 0x45: 
+                appendEmulator(i, [State8080.memory[i]], "MOV B, L");
+                break; 
+            case 0x46: 
+                appendEmulator(i, [State8080.memory[i]], "MOV B, M");
+                break; 
+            case 0x47: 
+                appendEmulator(i, [State8080.memory[i]], "MOV B, A");
+                break; 
+            case 0x48: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, B");
+                break; 
+            case 0x49: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, C");
+                break; 
+            case 0x4a: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, D");
+                break; 
+            case 0x4b: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, E");
+                break; 
+            case 0x4c: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, H");
+                break; 
+            case 0x4d: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, L");
+                break; 
+            case 0x4e: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, M");
+                break; 
+            case 0x4f: 
+                appendEmulator(i, [State8080.memory[i]], "MOV C, A");
+                break; 
+            case 0x50: 
+                appendEmulator(i, [State8080.memory[i]], "MOV D, B");
+                break; 
+            case 0x51:
+                appendEmulator(i, [State8080.memory[i]], "MOV D, C"); 
+                break;
+            case 0x52:
+                appendEmulator(i, [State8080.memory[i]], "MOV D, D"); 
+                break;
+            case 0x53: 
+                appendEmulator(i, [State8080.memory[i]], "MOV D, E");
+                break;
+            case 0x54: 
+                appendEmulator(i, [State8080.memory[i]], "MOV D, H");
+                break;
+            case 0x55: 
+                appendEmulator(i, [State8080.memory[i]], "MOV D, L");
+                break;
+            case 0x56:
+                appendEmulator(i, [State8080.memory[i]], "MOV D, M");
+                break;
+            case 0x57:
+                appendEmulator(i, [State8080.memory[i]], "MOV D, A");
+                break;
+            case 0x58:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, B");
+                break;
+            case 0x59:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, C");
+                break;
+            case 0x5a:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, D");
+                break;
+            case 0x5b:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, E");
+                break;
+            case 0x5c:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, H");
+                break;
+            case 0x5d:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, L");
+                break;
+            case 0x5e:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, M");
+                break;
+            case 0x5f:
+                appendEmulator(i, [State8080.memory[i]], "MOV E, A");
+                break;
+            case 0x60:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, B");
+                break;
+            case 0x61:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, C");
+                break;
+            case 0x62:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, D");
+                break;
+            case 0x63:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, E");
+                break;
+            case 0x64:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, H");
+                break;
+            case 0x65:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, L");
+                break;
+            case 0x66:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, M");
+                break;
+            case 0x67:
+                appendEmulator(i, [State8080.memory[i]], "MOV H, A");
+                break;
+            case 0x68:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, B");
+                break;
+            case 0x69:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, C");
+                break;
+            case 0x6a:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, D");
+                break;
+            case 0x6b:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, E");
+                break;
+            case 0x6c:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, H");
+                break;
+            case 0x6d:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, L");
+                break;
+            case 0x6e:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, M");
+                break;
+            case 0x6f:
+                appendEmulator(i, [State8080.memory[i]], "MOV L, A");
+                break;
+            case 0x70:
+                appendEmulator(i, [State8080.memory[i]], "MOV M, B");
+                break;
+            case 0x71:
+                appendEmulator(i, [State8080.memory[i]], "MOV M, C");
+                break;
+            case 0x72:
+                appendEmulator(i, [State8080.memory[i]], "MOV M, D");
+                break;
+            case 0x73:
+                appendEmulator(i, [State8080.memory[i]], "MOV M, E");
+                break;
+            case 0x74:
+                appendEmulator(i, [State8080.memory[i]], "MOV M, H");
+                break;
+            case 0x75:
+                appendEmulator(i, [State8080.memory[i]], "MOV M, L");
+                break;
+            case 0x76:
+                appendEmulator(i, [State8080.memory[i]], "HLT");
+                break;
+            case 0x77:
+                appendEmulator(i, [State8080.memory[i]], "MOV M, A");
+                break;
+            case 0x78:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, B");
+                break;
+            case 0x79:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, C");
+                break;
+            case 0x7a:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, D");
+                break;
+            case 0x7b:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, E");
+                break;
+            case 0x7c:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, H");
+                break;
+            case 0x7d:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, L");
+                break;
+            case 0x7e:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, M");
+                break;
+            case 0x7f:
+                appendEmulator(i, [State8080.memory[i]], "MOV A, A");
+                break;
+            case 0x80:
+                appendEmulator(i, [State8080.memory[i]], "ADD B");
+                break;
+            case 0x81:
+                appendEmulator(i, [State8080.memory[i]], "ADD C");
+                break;
+            case 0x82:
+                appendEmulator(i, [State8080.memory[i]], "ADD D");
+                break;
+            case 0x83:
+                appendEmulator(i, [State8080.memory[i]], "ADD E");
+                break;
+            case 0x84:
+                appendEmulator(i, [State8080.memory[i]], "ADD H");
+                break;
+            case 0x85:
+                appendEmulator(i, [State8080.memory[i]], "ADD L");
+                break;
+            case 0x86:
+                appendEmulator(i, [State8080.memory[i]], "ADD M");
+                break;
+            case 0x87:
+                appendEmulator(i, [State8080.memory[i]], "ADD A");
+                break;
+            case 0x88:
+                appendEmulator(i, [State8080.memory[i]], "ADC B");
+                break;
+            case 0x89:
+                appendEmulator(i, [State8080.memory[i]], "ADC C");
+                break;
+            case 0x8a:
+                appendEmulator(i, [State8080.memory[i]], "ADC D");
+                break;
+            case 0x8b:
+                appendEmulator(i, [State8080.memory[i]], "ADC E");
+                break;
+            case 0x8c:
+                appendEmulator(i, [State8080.memory[i]], "ADC H");
+                break;
+            case 0x8d:
+                appendEmulator(i, [State8080.memory[i]], "ADC L");
+                break;
+            case 0x8e:
+                appendEmulator(i, [State8080.memory[i]], "ADC M");
+                break;
+            case 0x8f:
+                appendEmulator(i, [State8080.memory[i]], "ADC A");
+                break;
+            case 0x90:
+                appendEmulator(i, [State8080.memory[i]], "SUB B");
+                break;
+            case 0x91:
+                appendEmulator(i, [State8080.memory[i]], "SUB C");
+                break;
+            case 0x92:
+                appendEmulator(i, [State8080.memory[i]], "SUB D");
+                break;
+            case 0x93:
+                appendEmulator(i, [State8080.memory[i]], "SUB E");
+                break;
+            case 0x94:
+                appendEmulator(i, [State8080.memory[i]], "SUB H");
+                break;
+            case 0x95:
+                appendEmulator(i, [State8080.memory[i]], "SUB L");
+                break;
+            case 0x96:
+                appendEmulator(i, [State8080.memory[i]], "SUB M");
+                break;
+            case 0x97:
+                appendEmulator(i, [State8080.memory[i]], "SUB A");
+                break;
+            case 0x98:
+                appendEmulator(i, [State8080.memory[i]], "SBB B");
+                break;
+            case 0x99:
+                appendEmulator(i, [State8080.memory[i]], "SBB C");
+                break;
+            case 0x9a:
+                appendEmulator(i, [State8080.memory[i]], "SBB D");
+                break;
+            case 0x9b:
+                appendEmulator(i, [State8080.memory[i]], "SBB E");
+                break;
+            case 0x9c:
+                appendEmulator(i, [State8080.memory[i]], "SBB H");
+                break;
+            case 0x9d:
+                appendEmulator(i, [State8080.memory[i]], "SBB L");
+                break;
+            case 0x9e:
+                appendEmulator(i, [State8080.memory[i]], "SBB M");
+                break;
+            case 0x9f:
+                appendEmulator(i, [State8080.memory[i]], "SBB A");
+                break;
+            case 0xa0:
+                appendEmulator(i, [State8080.memory[i]], "ANA B");
+                break;
+            case 0xa1:
+                appendEmulator(i, [State8080.memory[i]], "ANA C");
+                break;
+            case 0xa2:
+                appendEmulator(i, [State8080.memory[i]], "ANA D");
+                break;
+            case 0xa3:
+                appendEmulator(i, [State8080.memory[i]], "ANA E");
+                break;
+            case 0xa4:
+                appendEmulator(i, [State8080.memory[i]], "ANA H");
+                break;
+            case 0xa5:
+                appendEmulator(i, [State8080.memory[i]], "ANA L");
+                break;
+            case 0xa6:
+                appendEmulator(i, [State8080.memory[i]], "ANA M");
+                break;
+            case 0xa7:
+                appendEmulator(i, [State8080.memory[i]], "ANA A");
+                break;
+            case 0xa8:
+                appendEmulator(i, [State8080.memory[i]], "XRA B");
+                break;
+            case 0xa9:
+                appendEmulator(i, [State8080.memory[i]], "XRA C");
+                break;
+            case 0xaa:
+                appendEmulator(i, [State8080.memory[i]], "XRA D");
+                break;
+            case 0xab:
+                appendEmulator(i, [State8080.memory[i]], "XRA E");
+                break;
+            case 0xac:
+                appendEmulator(i, [State8080.memory[i]], "XRA H");
+                break;
+            case 0xad:
+                appendEmulator(i, [State8080.memory[i]], "XRA L");
+                break;
+            case 0xae:
+                appendEmulator(i, [State8080.memory[i]], "XRA M");
+                break;
+            case 0xaf:
+                appendEmulator(i, [State8080.memory[i]], "XRA A");
+                break;
+            case 0xb0:
+                appendEmulator(i, [State8080.memory[i]], "ORA B");
+                break;
+            case 0xb1:
+                appendEmulator(i, [State8080.memory[i]], "ORA C");
+                break;
+            case 0xb2:
+                appendEmulator(i, [State8080.memory[i]], "ORA D");
+                break;
+            case 0xb3:
+                appendEmulator(i, [State8080.memory[i]], "ORA E");
+                break;
+            case 0xb4:
+                appendEmulator(i, [State8080.memory[i]], "ORA H");
+                break;
+            case 0xb5:
+                appendEmulator(i, [State8080.memory[i]], "ORA L");
+                break;
+            case 0xb6:
+                appendEmulator(i, [State8080.memory[i]], "ORA M");
+                break;
+            case 0xb7:
+                appendEmulator(i, [State8080.memory[i]], "ORA A");
+                break;
+            case 0xb8:
+                appendEmulator(i, [State8080.memory[i]], "CMP B");
+                break;
+            case 0xb9:
+                appendEmulator(i, [State8080.memory[i]], "CMP C");
+                break;
+            case 0xba:
+                appendEmulator(i, [State8080.memory[i]], "CMP D");
+                break;
+            case 0xbb:
+                appendEmulator(i, [State8080.memory[i]], "CMP E");
+                break;
+            case 0xbc:
+                appendEmulator(i, [State8080.memory[i]], "CMP H");
+                break;
+            case 0xbd:
+                appendEmulator(i, [State8080.memory[i]], "CMP L");
+                break;
+            case 0xbe:
+                appendEmulator(i, [State8080.memory[i]], "CMP M");
+                break;
+            case 0xbf:
+                appendEmulator(i, [State8080.memory[i]], "CMP A");
+                break;
+            case 0xc0:
+                appendEmulator(i, [State8080.memory[i]], "RNZ");
+                break;
+            case 0xc1:
+                appendEmulator(i, [State8080.memory[i]], "POP B");
+                break;
+            case 0xc2:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JNZ " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xc3:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JMP " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xc4:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CNZ " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xc5:
+                appendEmulator(i, [State8080.memory[i]], "PUSH B");
+                break;
+            case 0xc6:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ADI D8");
+                i++;
+                break;
+            case 0xc7:
+                appendEmulator(i, [State8080.memory[i]], "RST 0");
+                break;
+            case 0xc8:
+                appendEmulator(i, [State8080.memory[i]], "RZ");
+                break;
+            case 0xc9:
+                appendEmulator(i, [State8080.memory[i]], "RET");
+                break;
+            case 0xca:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JZ " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xcc:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CZ " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xcd:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CALL " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xce:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ACI D8");
+                i++;
+                break;
+            case 0xcf:
+                appendEmulator(i, [State8080.memory[i]], "RST 1");
+                break;
+            case 0xd0:
+                appendEmulator(i, [State8080.memory[i]], "RNC");
+                break;
+            case 0xd1:
+                appendEmulator(i, [State8080.memory[i]], "POP D");
+                break;
+            case 0xd2:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JNC " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xd3:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "OUT D8");
+                i++;
+                break;
+            case 0xd4:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CNC " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xd5:
+                appendEmulator(i, [State8080.memory[i]], "PUSH D");
+                break;
+            case 0xd6:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "SUI D8");
+                i++;
+                break;
+            case 0xd7:
+                appendEmulator(i, [State8080.memory[i]], "RST 2");
+                break;
+            case 0xd8:
+                appendEmulator(i, [State8080.memory[i]], "RC");
+                break;
+            case 0xda:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JC " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xdb:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "IN D8");
+                i++;
+                break;
+            case 0xdc:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CC " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xde:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "SBI D8");
+                i++;
+                break;
+            case 0xdf:
+                appendEmulator(i, [State8080.memory[i]], "RST 3");
+                break;
+            case 0xe0:
+                appendEmulator(i, [State8080.memory[i]], "RPO");
+                break;
+            case 0xe1:
+                appendEmulator(i, [State8080.memory[i]], "POP H");
+                break;
+            case 0xe2:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JPO " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xe3:
+                appendEmulator(i, [State8080.memory[i]], "XTHL");
+                break;
+            case 0xe4:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CPO " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xe5:
+                appendEmulator(i, [State8080.memory[i]], "PUSH H");
+                break;
+            case 0xe6:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ANI D8");
+                i++;
+                break;
+            case 0xe7:
+                appendEmulator(i, [State8080.memory[i]], "RST 4");
+                break;
+            case 0xe8:
+                appendEmulator(i, [State8080.memory[i]], "RPE");
+                break;
+            case 0xe9:
+                appendEmulator(i, [State8080.memory[i]], "PCHL");
+                break;
+            case 0xea:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JPE " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xeb:
+                appendEmulator(i, [State8080.memory[i]], "XCHG");
+                break;
+            case 0xec:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CPE " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xee:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "XRI D8");
+                i++;
+                break;
+            case 0xef:
+                appendEmulator(i, [State8080.memory[i]], "RST 5");
+                break;
+            case 0xf0:
+                appendEmulator(i, [State8080.memory[i]], "RP");
+                break;
+            case 0xf1:
+                appendEmulator(i, [State8080.memory[i]], "POP PSW");
+                break;
+            case 0xf2:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JP " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1] ));
+                i+= 2;
+                break;
+            case 0xf3:
+                appendEmulator(i, [State8080.memory[i]], "DI");
+                break;
+            case 0xf4:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CP " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1]));
+                i+= 2;
+                break;
+            case 0xf5:
+                appendEmulator(i, [State8080.memory[i]], "PUSH PSW");
+                break;
+            case 0xf6:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ORI D8");
+                i++;
+                break;
+            case 0xf7:
+                appendEmulator(i, [State8080.memory[i]], "RST 6");
+                break;
+            case 0xf8:
+                appendEmulator(i, [State8080.memory[i]], "RM");
+                break;
+            case 0xf9:
+                appendEmulator(i, [State8080.memory[i]], "SPHL");
+                break;
+            case 0xfa:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "JM " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1] ));
+                i+= 2;
+                break;
+            case 0xfb:
+                appendEmulator(i, [State8080.memory[i]], "EI");
+                break;
+            case 0xfc:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1], State8080.memory[i+2]], "CM " + toHexa(State8080.memory[i+2]) + toHexa(State8080.memory[i+1] ));
+                i+= 2;
+                break;
+            case 0xfe:
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "CPI D8");
+                i++;
+                break;
+            case 0xff:
+                appendEmulator(i, [State8080.memory[i]], "RST 7");
+                break;
+            default:
+                appendEmulator(i, [State8080.memory[i]], "UNDEFINED");
+                break;
+        }
+    }
+}
+
+
+/**
+ * Emulates the 8080 microprocessor
+ */
+function emulator8080(){
     if (State8080.memory == null){
         State8080.memory = new Uint8Array(fileBuffer);
     }
@@ -740,6 +1569,7 @@ function disassemblerBuffer(){
             case 0x9f:
                 appendLog( State8080.pc.toString(16) + " | " + "SBB A");
                 State8080.a += twoComplement(State8080.a + State8080.cc.CY);
+                setFlags(State8080.a);
                 break;
             case 0xa0:
                 appendLog( State8080.pc.toString(16) + " | " + "ANA B");
@@ -930,7 +1760,6 @@ function disassemblerBuffer(){
                 }else{
                     State8080.pc+= 2;
                 }
-                State8080.pc+= 2;
                 break;
             case 0xc3:
                 appendLog( State8080.pc.toString(16) + " | " + "JMP " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
