@@ -916,6 +916,9 @@ function disassemblerBuffer(){
                 break;
             case 0xc0:
                 appendLog( State8080.pc.toString(16) + " | " + "RNZ");
+                if (State8080.cc.Z == 0){
+                    State8080.pc = pop();
+                }
                 break;
             case 0xc1:
                 appendLog( State8080.pc.toString(16) + " | " + "POP B");
@@ -935,7 +938,12 @@ function disassemblerBuffer(){
                 break;
             case 0xc4:
                 appendLog( State8080.pc.toString(16) + " | " + "CNZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                if (State8080.cc.Z == 0){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                }else{
                 State8080.pc+= 2;
+                }
                 break;
             case 0xc5:
                 appendLog( State8080.pc.toString(16) + " | " + "PUSH B");
@@ -949,6 +957,9 @@ function disassemblerBuffer(){
                 break;
             case 0xc8:
                 appendLog( State8080.pc.toString(16) + " | " + "RZ");
+                if (State8080.cc.Z == 1){
+                    State8080.pc = pop();
+                }
                 break;
             case 0xc9:
                 appendLog( State8080.pc.toString(16) + " | " + "RET");
@@ -964,12 +975,16 @@ function disassemblerBuffer(){
                 break;
             case 0xcc:
                 appendLog( State8080.pc.toString(16) + " | " + "CZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                if (State8080.cc.Z == 1){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
+                }else{
                 State8080.pc+= 2;
+                }
                 break;
             case 0xcd:
                 appendLog( State8080.pc.toString(16) + " | " + "CALL " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
-                const ret = State8080.pc + 2;
-                push(ret);
+                push(State8080.pc + 2);
                 State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
                 break;
             case 0xce:
@@ -981,6 +996,9 @@ function disassemblerBuffer(){
                 break;
             case 0xd0:
                 appendLog( State8080.pc.toString(16) + " | " + "RNC");
+                if (State8080.cc.CY == 0){
+                    State8080.pc = pop();
+                }
                 break;
             case 0xd1:
                 appendLog( State8080.pc.toString(16) + " | " + "POP D");
@@ -1000,7 +1018,12 @@ function disassemblerBuffer(){
                 break;
             case 0xd4:
                 appendLog( State8080.pc.toString(16) + " | " + "CNC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                if (State8080.cc.CY == 0){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
+                }else{
                 State8080.pc+= 2;
+                }
                 break;
             case 0xd5:
                 appendLog( State8080.pc.toString(16) + " | " + "PUSH D");
@@ -1014,6 +1037,9 @@ function disassemblerBuffer(){
                 break;
             case 0xd8:
                 appendLog( State8080.pc.toString(16) + " | " + "RC");
+                if (State8080.cc.CY == 1){
+                    State8080.pc = pop();
+                } 
                 break;
             case 0xda:
                 appendLog( State8080.pc.toString(16) + " | " + "JC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
@@ -1030,7 +1056,12 @@ function disassemblerBuffer(){
                 break;
             case 0xdc:
                 appendLog( State8080.pc.toString(16) + " | " + "CC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
-                State8080.pc+= 2;
+                if (State8080.cc.CY == 1){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                }else{
+                    State8080.pc+= 2;
+                }
                 break;
             case 0xde:
                 appendLog( State8080.pc.toString(16) + " | " + "SBI D8");
@@ -1041,6 +1072,9 @@ function disassemblerBuffer(){
                 break;
             case 0xe0:
                 appendLog( State8080.pc.toString(16) + " | " + "RPO");
+                if (State8080.cc.P == 0){
+                    State8080.pc = pop();
+                }
                 break;
             case 0xe1:
                 appendLog( State8080.pc.toString(16) + " | " + "POP H");
@@ -1058,7 +1092,12 @@ function disassemblerBuffer(){
                 break;
             case 0xe4:
                 appendLog( State8080.pc.toString(16) + " | " + "CPO " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
-                State8080.pc+= 2;
+                if (State8080.cc.P == 0){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
+                }else{
+                    State8080.pc+= 2;
+                }
                 break;
             case 0xe5:
                 appendLog( State8080.pc.toString(16) + " | " + "PUSH H");
@@ -1072,6 +1111,9 @@ function disassemblerBuffer(){
                 break;
             case 0xe8:
                 appendLog( State8080.pc.toString(16) + " | " + "RPE");
+                if (State8080.cc.P == 1){
+                    State8080.pc = pop();
+                }
                 break;
             case 0xe9:
                 appendLog( State8080.pc.toString(16) + " | " + "PCHL");
@@ -1089,7 +1131,12 @@ function disassemblerBuffer(){
                 break;
             case 0xec:
                 appendLog( State8080.pc.toString(16) + " | " + "CPE " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
-                State8080.pc+= 2;
+                if (State8080.cc.P == 1){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
+                }else{
+                    State8080.pc+= 2;
+                }
                 break;
             case 0xee:
                 appendLog( State8080.pc.toString(16) + " | " + "XRI D8");
@@ -1100,6 +1147,9 @@ function disassemblerBuffer(){
                 break;
             case 0xf0:
                 appendLog( State8080.pc.toString(16) + " | " + "RP");
+                if (State8080.cc.S == 0){
+                    State8080.pc = pop();
+                }
                 break;
             case 0xf1:
                 appendLog( State8080.pc.toString(16) + " | " + "POP PSW");
@@ -1117,7 +1167,12 @@ function disassemblerBuffer(){
                 break;
             case 0xf4:
                 appendLog( State8080.pc.toString(16) + " | " + "CP " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
-                State8080.pc+= 2;
+                if (State8080.cc.S == 0){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                }else{
+                    State8080.pc+= 2;
+                }
                 break;
             case 0xf5:
                 appendLog( State8080.pc.toString(16) + " | " + "PUSH PSW");
@@ -1131,6 +1186,9 @@ function disassemblerBuffer(){
                 break;
             case 0xf8:
                 appendLog( State8080.pc.toString(16) + " | " + "RM");
+                if (State8080.cc.S == 1){
+                    State8080.pc = pop();
+                }
                 break;
             case 0xf9:
                 appendLog( State8080.pc.toString(16) + " | " + "SPHL");
@@ -1148,6 +1206,12 @@ function disassemblerBuffer(){
                 break;
             case 0xfc:
                 appendLog( State8080.pc.toString(16) + " | " + "CM " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                if (State8080.cc.S == 1){
+                    push(State8080.pc + 2);
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                }else{
+                    State8080.pc+= 2;
+                }
                 break;
             case 0xfe:
                 appendLog( State8080.pc.toString(16) + " | " + "CPI D8");
