@@ -122,6 +122,23 @@ function twoComplement(nbr){
     return (~nbr + 1);
 }
 
+function push(hight, low){
+    State8080.memory[State8080.sp - 1] = hight;
+    State8080.memory[State8080.sp - 2] = low;
+    State8080.sp -= 2;
+}
+
+function push(value){
+    State8080.memory[State8080.sp - 1] = (value >> 8) & 0xff;
+    State8080.memory[State8080.sp - 2] = value & 0xff;
+    State8080.sp -= 2;
+}
+
+function pop(){
+    State8080.sp += 2;
+    return State8080.memory[State8080.sp + 1] << 8 | State8080.memory[State8080.sp];
+}
+
 function disassemblerBuffer(){
     if (State8080.memory == null){
         State8080.memory = new Uint8Array(fileBuffer);
@@ -906,7 +923,7 @@ function disassemblerBuffer(){
             case 0xc2:
                 appendLog( State8080.pc.toString(16) + " | " + "JNZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.Z == 0){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
                     State8080.pc+= 2;
                 }
@@ -914,7 +931,7 @@ function disassemblerBuffer(){
                 break;
             case 0xc3:
                 appendLog( State8080.pc.toString(16) + " | " + "JMP " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
-                State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 break;
             case 0xc4:
                 appendLog( State8080.pc.toString(16) + " | " + "CNZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
@@ -935,11 +952,12 @@ function disassemblerBuffer(){
                 break;
             case 0xc9:
                 appendLog( State8080.pc.toString(16) + " | " + "RET");
+                State8080.pc = pop();
                 break;
             case 0xca:
                 appendLog( State8080.pc.toString(16) + " | " + "JZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.Z == 1){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
                     State8080.pc+= 2;
                 }
@@ -950,7 +968,9 @@ function disassemblerBuffer(){
                 break;
             case 0xcd:
                 appendLog( State8080.pc.toString(16) + " | " + "CALL " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
-                State8080.pc+= 2;
+                const ret = State8080.pc + 2;
+                push(ret);
+                State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
                 break;
             case 0xce:
                 appendLog( State8080.pc.toString(16) + " | " + "ACI D8");
@@ -968,7 +988,7 @@ function disassemblerBuffer(){
             case 0xd2:
                 appendLog( State8080.pc.toString(16) + " | " + "JNC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.CY == 0){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }
                 else{
                     State8080.pc+= 2;
@@ -998,7 +1018,7 @@ function disassemblerBuffer(){
             case 0xda:
                 appendLog( State8080.pc.toString(16) + " | " + "JC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.CY == 1){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }
                 else {
                     State8080.pc+= 2;
@@ -1028,7 +1048,7 @@ function disassemblerBuffer(){
             case 0xe2:
                 appendLog( State8080.pc.toString(16) + " | " + "JPO " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 0){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
                     State8080.pc+= 2;
                 }
@@ -1059,7 +1079,7 @@ function disassemblerBuffer(){
             case 0xea:
                 appendLog( State8080.pc.toString(16) + " | " + "JPE " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 1){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
                     State8080.pc+= 2;
                 }
@@ -1087,7 +1107,7 @@ function disassemblerBuffer(){
             case 0xf2:
                 appendLog( State8080.pc.toString(16) + " | " + "JP " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 0){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
                     State8080.pc+= 2;
                 }
@@ -1118,7 +1138,7 @@ function disassemblerBuffer(){
             case 0xfa:
                 appendLog( State8080.pc.toString(16) + " | " + "JM " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.S == 1){
-                    State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
+                    State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
                 State8080.pc+= 2;
                 }
