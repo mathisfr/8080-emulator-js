@@ -103,7 +103,7 @@ function appendEmulator(_address, _opcode, _instruction){
     const instruction = document.createElement("td");
     address.appendChild(document.createTextNode(toHexa16b(_address)));
     for (var i = 0; i < _opcode.length; i++){
-        opcode.appendChild(document.createTextNode(toHexa(_opcode[i])));
+        opcode.appendChild(document.createTextNode(toHexa8b(_opcode[i])));
     }
     instruction.appendChild(document.createTextNode(_instruction));
     rowTable.appendChild(address);
@@ -155,8 +155,8 @@ function toHexa16b(nbr){
     return "0x" + nbr.toString(16).padStart(4, '0') + " ";
 }
 
-function toHexa(nbr){
-    return "0x" + nbr.toString(16) + " ";
+function toHexa8b(nbr){
+    return "0x" + nbr.toString(16).padStart(2, '0') + " ";
 }
 
 function setFlags(result){
@@ -240,7 +240,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR B");
                 break;
             case 0x06:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI B, " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI B, " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x07:
@@ -262,7 +262,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR C");
                 break;
             case 0x0e:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI C, " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI C, " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x0f:
@@ -285,7 +285,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR D");
                 break;
             case 0x16:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI D, " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI D, " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x17:
@@ -307,7 +307,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR E");
                 break;
             case 0x1e:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI E, " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI E, " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x1f:
@@ -334,7 +334,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR H");
                 break;
             case 0x26:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI H, " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI H, " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x27:
@@ -357,7 +357,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR L");
                 break;
             case 0x2e:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI L, " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI L, " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x2f:
@@ -381,7 +381,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR M");
                 break;
             case 0x36:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI M," + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI M," + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x37:
@@ -405,7 +405,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "DCR A");
                 break;
             case 0x3e:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI A," + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "MVI A," + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0x3f:
@@ -817,7 +817,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "PUSH B");
                 break;
             case 0xc6:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ADI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ADI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xc7:
@@ -842,7 +842,7 @@ function disassemblerBuffer(){
                 i+= 2;
                 break;
             case 0xce:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ACI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ACI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xcf:
@@ -859,7 +859,7 @@ function disassemblerBuffer(){
                 i+= 2;
                 break;
             case 0xd3:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "OUT " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "OUT " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xd4:
@@ -870,7 +870,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "PUSH D");
                 break;
             case 0xd6:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "SUI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "SUI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xd7:
@@ -884,7 +884,7 @@ function disassemblerBuffer(){
                 i+= 2;
                 break;
             case 0xdb:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "IN " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "IN " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xdc:
@@ -892,7 +892,7 @@ function disassemblerBuffer(){
                 i+= 2;
                 break;
             case 0xde:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "SBI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "SBI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xdf:
@@ -919,7 +919,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "PUSH H");
                 break;
             case 0xe6:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ANI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ANI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xe7:
@@ -943,7 +943,7 @@ function disassemblerBuffer(){
                 i+= 2;
                 break;
             case 0xee:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "XRI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "XRI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xef:
@@ -970,7 +970,7 @@ function disassemblerBuffer(){
                 appendEmulator(i, [State8080.memory[i]], "PUSH PSW");
                 break;
             case 0xf6:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ORI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "ORI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xf7:
@@ -994,7 +994,7 @@ function disassemblerBuffer(){
                 i+= 2;
                 break;
             case 0xfe:
-                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "CPI " + toHexa(State8080.memory[i+1]));
+                appendEmulator(i, [State8080.memory[i], State8080.memory[i+1]], "CPI " + toHexa8b(State8080.memory[i+1]));
                 i++;
                 break;
             case 0xff:
@@ -1143,7 +1143,7 @@ function emulator8080(){
                 State8080.pc+= 2;
                 break;
             case 0x22:
-                appendLog( State8080.pc.toString(16) + " | " + "SHLD " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "SHLD " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 State8080.pc+= 2;
                 break;
             case 0x23:
@@ -1166,7 +1166,7 @@ function emulator8080(){
                 appendLog( State8080.pc.toString(16) + " | " + "DAD H");
                 break;
             case 0x2a:
-                appendLog( State8080.pc.toString(16) + " | " + "LHLD " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "LHLD " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 State8080.pc+= 2;
                 break;
             case 0x2b:
@@ -1191,7 +1191,7 @@ function emulator8080(){
                 State8080.pc+= 2;
                 break;
             case 0x32:
-                appendLog( State8080.pc.toString(16) + " | " + "STA " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "STA " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 State8080.pc+= 2;
                 break;
             case 0x33:
@@ -1214,7 +1214,7 @@ function emulator8080(){
                 appendLog( State8080.pc.toString(16) + " | " + "DAD SP");
                 break;
             case 0x3a:
-                appendLog( State8080.pc.toString(16) + " | " + "LDA " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "LDA " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 State8080.pc+= 2;
                 break;
             case 0x3b:
@@ -1828,7 +1828,7 @@ function emulator8080(){
                 State8080.c = tempPop & 0xFF;
                 break;
             case 0xc2:
-                appendLog( State8080.pc.toString(16) + " | " + "JNZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "JNZ " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.Z == 0){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
@@ -1836,11 +1836,11 @@ function emulator8080(){
                 }
                 break;
             case 0xc3:
-                appendLog( State8080.pc.toString(16) + " | " + "JMP " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "JMP " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 break;
             case 0xc4:
-                appendLog( State8080.pc.toString(16) + " | " + "CNZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "CNZ " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.Z == 0){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
@@ -1870,7 +1870,7 @@ function emulator8080(){
                 State8080.pc = pop();
                 break;
             case 0xca:
-                appendLog( State8080.pc.toString(16) + " | " + "JZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "JZ " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.Z == 1){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
@@ -1878,7 +1878,7 @@ function emulator8080(){
                 }
                 break;
             case 0xcc:
-                appendLog( State8080.pc.toString(16) + " | " + "CZ " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "CZ " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.Z == 1){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
@@ -1887,7 +1887,7 @@ function emulator8080(){
                 }
                 break;
             case 0xcd:
-                appendLog( State8080.pc.toString(16) + " | " + "CALL " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "CALL " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 push(State8080.pc + 2);
                 State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
                 break;
@@ -1911,7 +1911,7 @@ function emulator8080(){
                 State8080.e = tempPop & 0xFF;
                 break;
             case 0xd2:
-                appendLog( State8080.pc.toString(16) + " | " + "JNC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "JNC " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.CY == 0){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }
@@ -1924,7 +1924,7 @@ function emulator8080(){
                 State8080.pc++;
                 break;
             case 0xd4:
-                appendLog( State8080.pc.toString(16) + " | " + "CNC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "CNC " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.CY == 0){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
@@ -1950,7 +1950,7 @@ function emulator8080(){
                 } 
                 break;
             case 0xda:
-                appendLog( State8080.pc.toString(16) + " | " + "JC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "JC " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.CY == 1){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }
@@ -1963,7 +1963,7 @@ function emulator8080(){
                 State8080.pc++;
                 break;
             case 0xdc:
-                appendLog( State8080.pc.toString(16) + " | " + "CC " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "CC " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.CY == 1){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
@@ -1991,7 +1991,7 @@ function emulator8080(){
                 State8080.l = tempPop & 0xFF;
                 break;
             case 0xe2:
-                appendLog( State8080.pc.toString(16) + " | " + "JPO " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "JPO " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 0){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
@@ -2008,7 +2008,7 @@ function emulator8080(){
                 State8080.h = hSwap;
                 break;
             case 0xe4:
-                appendLog( State8080.pc.toString(16) + " | " + "CPO " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "CPO " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 0){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
@@ -2040,7 +2040,7 @@ function emulator8080(){
                 appendLog( State8080.pc.toString(16) + " | " + "PCHL");
                 break;
             case 0xea:
-                appendLog( State8080.pc.toString(16) + " | " + "JPE " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "JPE " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 1){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
@@ -2051,7 +2051,7 @@ function emulator8080(){
                 appendLog( State8080.pc.toString(16) + " | " + "XCHG");
                 break;
             case 0xec:
-                appendLog( State8080.pc.toString(16) + " | " + "CPE " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "CPE " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 1){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
@@ -2087,7 +2087,7 @@ function emulator8080(){
                 State8080.cc.CY = restore & 0x01;
                 break;
             case 0xf2:
-                appendLog( State8080.pc.toString(16) + " | " + "JP " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "JP " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.P == 0){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
@@ -2099,7 +2099,7 @@ function emulator8080(){
                 State8080.int_enable = 0;
                 break;
             case 0xf4:
-                appendLog( State8080.pc.toString(16) + " | " + "CP " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1]));
+                appendLog( State8080.pc.toString(16) + " | " + "CP " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1]));
                 if (State8080.cc.S == 0){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
@@ -2133,7 +2133,7 @@ function emulator8080(){
                 State8080.sp = State8080.h << 8 | State8080.l;
                 break;
             case 0xfa:
-                appendLog( State8080.pc.toString(16) + " | " + "JM " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "JM " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.S == 1){
                     State8080.pc = State8080.memory[State8080.pc+2] << 8| State8080.memory[State8080.pc+1];
                 }else{
@@ -2145,7 +2145,7 @@ function emulator8080(){
                 State8080.int_enable = 1;
                 break;
             case 0xfc:
-                appendLog( State8080.pc.toString(16) + " | " + "CM " + toHexa(State8080.memory[State8080.pc+2]) + toHexa(State8080.memory[State8080.pc+1] ));
+                appendLog( State8080.pc.toString(16) + " | " + "CM " + toHexa8b(State8080.memory[State8080.pc+2]) + toHexa8b(State8080.memory[State8080.pc+1] ));
                 if (State8080.cc.S == 1){
                     push(State8080.pc + 2);
                     State8080.pc = State8080.memory[State8080.pc+2] << 8 | State8080.memory[State8080.pc+1];
