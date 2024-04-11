@@ -11,5 +11,7 @@ L'objectif principal est de fournir une plateforme pour émuler et exécuter des
 
 ## Utilisation
 
-Pour le moment, vous pouvez exécuter le désassembleur pour traduire les instructions binaires en code assembleur lisible.
+Actuellement, vous pouvez uniquement utiliser le désassembleur pour traduire les instructions binaires en code assembleur de programmes fonctionnant sur le processeur Intel 8080.  
+Le projet est au début de son développement, donc il est possible qu'il subsiste des erreurs.  
+Vous êtes invité à tester le désassembleur ici : [i](https://mathisfr.github.io/8080-emulator-js/)
 
