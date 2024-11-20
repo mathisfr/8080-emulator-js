@@ -1,6 +1,6 @@
 # Emulateur 8080 en JavaScript
 
-# /!\ WORK IN PROGRESS /!\
+*Pour le moment, le projet est en pause. Je suis sur autre chose, pour le moment je ne compte pas le reprendre*
 
 Ceci est un projet d'émulateur 8080 écrit en JavaScript.  
 L'objectif principal est de fournir une plateforme pour émuler et exécuter des programmes écrits pour le processeur Intel 8080.
