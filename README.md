@@ -1,4 +1,4 @@
-> Pour le moment, le projet est en pause. Je suis sur autre chose, pour le moment.
+> Pour le moment, le projet est en pause. Je suis sur autre chose, pour le moment.  
 > Mais je compte reprendre le projet à un moment.
 
 # Emulateur 8080 en JavaScript
